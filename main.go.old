@@ -1,0 +1,42 @@
+package main
+
+import (
+	"database/sql"
+	"log"
+	"net/http"
+
+	"mlm/handlers"
+	"mlm/routes"
+	"mlm/store"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	// Connect to MySQL
+	db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/mlm?parseTime=true")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	// Initialize stores
+	userStore := store.NewUserStore(db)
+	handlers.InitUserStore(userStore) // inject into handlers
+
+	// Similarly, initialize RoomStore and RoomMemberStore if you have handlers for them
+	// roomStore := store.NewRoomStore(db)
+	// handlers.InitRoomStore(roomStore)
+	// roomMemberStore := store.NewRoomMemberStore(db)
+	// handlers.InitRoomMemberStore(roomMemberStore)
+
+	// Setup routes
+	mux := http.NewServeMux()
+	routes.RegisterRoutes(mux)
+
+	// Start server
+	log.Println("Server running on :8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal(err)
+	}
+}

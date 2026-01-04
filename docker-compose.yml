@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: musicapp_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: musicapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpass
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
